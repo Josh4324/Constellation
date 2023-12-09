@@ -7,11 +7,17 @@
 const hre = require("hardhat");
 
 async function main() {
-  const eco = await hre.ethers.deployContract("ECO4Reward", []);
+  const ecolot = await hre.ethers.deployContract("ECO4RewardLotteryDaily", [
+    "0x0638169f3b57905858e6d9aB1f83741880ddDd57",
+    838,
+    "0x354d2f95da55398f44b7cff77da56283d9c6c829a4bdf1bbcaf2ad6a4d081f61",
+    2500000,
+    "0x2eD832Ba664535e5886b75D64C46EB9a228C2610",
+  ]);
 
-  await eco.waitForDeployment();
+  await ecolot.waitForDeployment();
 
-  console.log(`Contract deployed to ${eco.target}`);
+  console.log(`Contract deployed to ${ecolot.target}`);
 
   console.log("Sleeping.....");
   // Wait for etherscan to notice that the contract has been deployed
@@ -19,9 +25,15 @@ async function main() {
 
   // Verify the contract after deploying
   await hre.run("verify:verify", {
-    address: eco.target,
-    constructorArguments: [],
-    contract: "contracts/ECO.sol:ECO4Reward",
+    address: ecolot.target,
+    constructorArguments: [
+      "0x0638169f3b57905858e6d9aB1f83741880ddDd57",
+      838,
+      "0x354d2f95da55398f44b7cff77da56283d9c6c829a4bdf1bbcaf2ad6a4d081f61",
+      2500000,
+      "0x2eD832Ba664535e5886b75D64C46EB9a228C2610",
+    ],
+    contract: "contracts/Lottery.sol:ECO4RewardLotteryDaily",
   });
 
   function sleep(ms) {

@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.17;
 
-//import "hardhat/console.sol";
+import "hardhat/console.sol";
 
 /**
  * @title A ECO4Reward Contract
@@ -21,15 +21,14 @@ contract ECO4Reward {
     uint256 private actionCount;
     uint256 private wasteCount;
     uint256 private treeCount;
-    uint256 private userCount;
+    uint256 public userCount;
     uint256 private all_trees;
     uint256 private all_waste;
     uint256 private all_actions;
     uint256 private paid_out;
     uint256 private amount_donated;
-    Users[] private all_users;
 
-    struct Actions {
+    struct Action {
         uint256 id;
         string action_type;
         string description;
@@ -48,7 +47,7 @@ contract ECO4Reward {
         address creator;
     }
 
-    struct Trees {
+    struct Tree {
         uint256 id;
         uint256 no_of_trees;
         string locations;
@@ -57,7 +56,7 @@ contract ECO4Reward {
         address creator;
     }
 
-    struct Users {
+    struct User {
         uint256 id;
         uint256 trees;
         uint256 waste;
@@ -65,8 +64,10 @@ contract ECO4Reward {
         uint256 overall_score;
         uint256 score;
         address user;
-    } // Events
+        uint256 last_action;
+    }
 
+    // Events
     event actionCreated(
         uint256 id, string action_type, string description, string proof, bool status, bool confirmed, address creator
     );
@@ -79,18 +80,20 @@ contract ECO4Reward {
     event userCreated(
         uint256 id, uint256 trees, uint256 waste, uint256 actions, uint256 overall_score, uint256 score, address user
     );
-    event userUpdatedActions(uint256 actions, uint256 overall_score, uint256 score, address user);
-    event userUpdatedWaste(uint256 waste, uint256 overall_score, uint256 score, address user);
-    event userUpdatedTree(uint256 trees, uint256 overall_score, uint256 score, address user);
-    event userUpdatedScore(uint256 score, address user);
+    event userUpdatedActions(uint256 id, uint256 actions, uint256 overall_score, uint256 score);
+    event userUpdatedWaste(uint256 id, uint256 waste, uint256 overall_score, uint256 score);
+    event userUpdatedTree(uint256 id, uint256 trees, uint256 overall_score, uint256 score);
+    event userUpdatedScore(uint256 id, uint256 score);
+    event userUpdatedOverScore(uint256 id, uint256 overall_score);
 
     // Mappings
-    mapping(address => bool) private adminToBool;
+    mapping(address => bool) public adminToBool;
     mapping(address => bool) private usersList;
-    mapping(address => Users) private usersData;
-    mapping(uint256 => Actions) private idToActions;
+    mapping(address => User) public usersData;
+    mapping(uint256 => User) public userInfo;
+    mapping(uint256 => Action) private idToActions;
     mapping(uint256 => Waste) private idToWaste;
-    mapping(uint256 => Trees) private idToTrees;
+    mapping(uint256 => Tree) private idToTrees;
 
     // Modifiers
     modifier onlyAdmin() {
@@ -104,11 +107,11 @@ contract ECO4Reward {
     }
 
     // Constructor
-
     constructor() {
         ownerECO = msg.sender;
         adminToBool[msg.sender] = true;
     }
+
     // External Functions
 
     /*
@@ -126,7 +129,7 @@ contract ECO4Reward {
      *  
      */
     function registerAction(string calldata action_type, string calldata desc, string calldata proof) external {
-        idToActions[actionCount] = Actions(actionCount, action_type, desc, proof, false, false, msg.sender);
+        idToActions[actionCount] = Action(actionCount, action_type, desc, proof, false, false, msg.sender);
         emit actionCreated(actionCount, action_type, desc, proof, false, false, msg.sender);
         actionCount++;
     }
@@ -141,9 +144,10 @@ contract ECO4Reward {
         idToActions[id].confirmed = true;
         if (usersList[idToActions[id].creator] != true) {
             usersList[idToActions[id].creator] = true;
-            Users memory newUser = Users(userCount, 0, 0, 0, 0, 0, idToActions[id].creator);
+            User memory newUser = User(userCount, 0, 0, 0, 0, 0, idToActions[id].creator, 0);
             usersData[idToActions[id].creator] = newUser;
-            all_users.push(newUser);
+            userInfo[userCount] = newUser;
+            //all_users.push(newUser);
             emit userCreated(userCount, 0, 0, 0, 0, 0, idToActions[id].creator);
             userCount++;
         }
@@ -153,23 +157,26 @@ contract ECO4Reward {
             usersData[idToActions[id].creator].score = usersData[idToActions[id].creator].score + score;
             usersData[idToActions[id].creator].actions = usersData[idToActions[id].creator].actions + 1;
 
+            userInfo[usersData[idToActions[id].creator].id].overall_score =
+                userInfo[usersData[idToActions[id].creator].id].overall_score + score;
+
+            userInfo[usersData[idToActions[id].creator].id].score =
+                userInfo[usersData[idToActions[id].creator].id].score + score;
+
+            userInfo[usersData[idToActions[id].creator].id].actions =
+                userInfo[usersData[idToActions[id].creator].id].actions + 1;
+
             all_actions = all_actions + 1;
             emit userUpdatedActions(
+                usersData[idToActions[id].creator].id,
                 usersData[idToActions[id].creator].actions,
                 usersData[idToActions[id].creator].overall_score,
-                usersData[idToActions[id].creator].score,
-                idToActions[id].creator
+                usersData[idToActions[id].creator].score
             );
-
-            all_users[usersData[idToActions[id].creator].id].overall_score =
-                all_users[usersData[idToActions[id].creator].id].overall_score + score;
-
-            all_users[usersData[idToActions[id].creator].id].score =
-                all_users[usersData[idToActions[id].creator].id].score + score;
-
-            all_users[usersData[idToActions[id].creator].id].actions =
-                all_users[usersData[idToActions[id].creator].id].actions + 1;
         }
+
+        usersData[idToActions[id].creator].last_action = block.timestamp;
+        userInfo[usersData[idToActions[id].creator].id].last_action = block.timestamp;
 
         emit actionUpdated(id, status, true, idToActions[id].creator);
     }
@@ -196,10 +203,10 @@ contract ECO4Reward {
 
         if (usersList[idToWaste[id].creator] != true) {
             usersList[idToWaste[id].creator] = true;
-            Users memory newUser = Users(userCount, 0, 0, 0, 0, 0, idToWaste[id].creator);
+            User memory newUser = User(userCount, 0, 0, 0, 0, 0, idToWaste[id].creator, 0);
             usersData[idToWaste[id].creator] = newUser;
-            all_users.push(newUser);
-            emit userCreated(userCount, 0, 0, 0, 0, 0, idToActions[id].creator);
+            userInfo[userCount] = newUser;
+            emit userCreated(userCount, 0, 0, 0, 0, 0, idToWaste[id].creator);
             userCount++;
         }
 
@@ -207,25 +214,27 @@ contract ECO4Reward {
             usersData[idToWaste[id].creator].overall_score = usersData[idToWaste[id].creator].overall_score + score;
             usersData[idToWaste[id].creator].score = usersData[idToWaste[id].creator].score + score;
             usersData[idToWaste[id].creator].waste = usersData[idToWaste[id].creator].waste + idToWaste[id].weight;
+
+            userInfo[usersData[idToWaste[id].creator].id].overall_score =
+                userInfo[usersData[idToWaste[id].creator].id].overall_score + score;
+
+            userInfo[usersData[idToWaste[id].creator].id].score =
+                userInfo[usersData[idToWaste[id].creator].id].score + score;
+
+            userInfo[usersData[idToWaste[id].creator].id].actions =
+                userInfo[usersData[idToWaste[id].creator].id].actions + 1;
+
             all_waste = all_waste + idToWaste[id].weight;
 
             emit userUpdatedWaste(
+                usersData[idToWaste[id].creator].id,
                 usersData[idToWaste[id].creator].waste,
                 usersData[idToWaste[id].creator].overall_score,
-                usersData[idToWaste[id].creator].score,
-                idToWaste[id].creator
+                usersData[idToWaste[id].creator].score
             );
-
-            all_users[usersData[idToWaste[id].creator].id].overall_score =
-                all_users[usersData[idToWaste[id].creator].id].overall_score + score;
-
-            all_users[usersData[idToWaste[id].creator].id].score =
-                all_users[usersData[idToWaste[id].creator].id].score + score;
-
-            all_users[usersData[idToWaste[id].creator].id].waste =
-                all_users[usersData[idToWaste[id].creator].id].waste + idToWaste[id].weight;
         }
-
+        usersData[idToWaste[id].creator].last_action = block.timestamp;
+        userInfo[usersData[idToWaste[id].creator].id].last_action = block.timestamp;
         emit wasteUpdated(id, status, true, idToWaste[id].creator);
     }
 
@@ -235,7 +244,7 @@ contract ECO4Reward {
      *  
      */
     function registerTrees(uint256 no_of_tress, string calldata locations) external {
-        idToTrees[treeCount] = Trees(treeCount, no_of_tress, locations, false, false, msg.sender);
+        idToTrees[treeCount] = Tree(treeCount, no_of_tress, locations, false, false, msg.sender);
         emit treeCreated(treeCount, no_of_tress, locations, false, false, msg.sender);
         treeCount++;
     }
@@ -251,10 +260,11 @@ contract ECO4Reward {
 
         if (usersList[idToTrees[id].creator] != true) {
             usersList[idToTrees[id].creator] = true;
-            Users memory newUser = Users(userCount, 0, 0, 0, 0, 0, idToTrees[id].creator);
+            User memory newUser = User(userCount, 0, 0, 0, 0, 0, idToTrees[id].creator, 0);
             usersData[idToTrees[id].creator] = newUser;
-            all_users.push(newUser);
-            emit userCreated(userCount, 0, 0, 0, 0, 0, idToActions[id].creator);
+            userInfo[userCount] = newUser;
+
+            emit userCreated(userCount, 0, 0, 0, 0, 0, idToTrees[id].creator);
             userCount++;
         }
 
@@ -262,26 +272,43 @@ contract ECO4Reward {
             usersData[idToTrees[id].creator].overall_score = usersData[idToTrees[id].creator].overall_score + score;
             usersData[idToTrees[id].creator].score = usersData[idToTrees[id].creator].score + score;
             usersData[idToTrees[id].creator].trees = usersData[idToTrees[id].creator].trees + idToTrees[id].no_of_trees;
+
+            userInfo[usersData[idToTrees[id].creator].id].overall_score =
+                userInfo[usersData[idToTrees[id].creator].id].overall_score + score;
+
+            userInfo[usersData[idToTrees[id].creator].id].score =
+                userInfo[usersData[idToTrees[id].creator].id].score + score;
+
+            userInfo[usersData[idToTrees[id].creator].id].actions =
+                userInfo[usersData[idToTrees[id].creator].id].actions + 1;
+
             all_trees = all_trees + idToTrees[id].no_of_trees;
 
             emit userUpdatedTree(
+                usersData[idToTrees[id].creator].id,
                 usersData[idToTrees[id].creator].trees,
                 usersData[idToTrees[id].creator].overall_score,
-                usersData[idToTrees[id].creator].score,
-                idToTrees[id].creator
+                usersData[idToTrees[id].creator].score
             );
-
-            all_users[usersData[idToTrees[id].creator].id].overall_score =
-                all_users[usersData[idToWaste[id].creator].id].overall_score + score;
-
-            all_users[usersData[idToTrees[id].creator].id].score =
-                all_users[usersData[idToTrees[id].creator].id].score + score;
-
-            all_users[usersData[idToTrees[id].creator].id].trees =
-                all_users[usersData[idToTrees[id].creator].id].trees + idToTrees[id].no_of_trees;
         }
-
+        usersData[idToTrees[id].creator].last_action = block.timestamp;
+        userInfo[usersData[idToTrees[id].creator].id].last_action = block.timestamp;
         emit treeUpdated(id, status, true, idToTrees[id].creator);
+    }
+
+    /*
+     * @notice Assign point to lottery winners
+     *  
+     *  
+     */
+    function addPoint(uint256 points, address user) external onlyAdmin {
+        usersData[user].overall_score = usersData[user].overall_score + points;
+        usersData[user].score = usersData[user].score + points;
+        userInfo[usersData[user].id].overall_score = userInfo[usersData[user].id].overall_score + points;
+        userInfo[usersData[user].id].score = userInfo[usersData[user].id].score + points;
+
+        emit userUpdatedScore(usersData[user].id, usersData[user].score);
+        emit userUpdatedOverScore(usersData[user].id, userInfo[usersData[user].id].overall_score);
     }
 
     /*
@@ -294,12 +321,11 @@ contract ECO4Reward {
             revert ECO__InsufficientPoint();
         }
 
-        // 1 points = 0.1 toro
         uint256 amount = points * 0.1 ether;
 
         usersData[msg.sender].score = usersData[msg.sender].score - points;
-        all_users[usersData[msg.sender].id].score = all_users[usersData[msg.sender].id].score - points;
-        emit userUpdatedScore(usersData[msg.sender].score, msg.sender);
+
+        emit userUpdatedScore(usersData[msg.sender].id, usersData[msg.sender].score);
         paid_out = paid_out + amount;
 
         (bool success,) = (msg.sender).call{value: amount}("");
@@ -311,11 +337,8 @@ contract ECO4Reward {
      *  
      *  
      */
-    function donateOrFund(uint256 amount) external {
-        amount_donated = amount_donated + amount;
-
-        (bool success,) = (address(this)).call{value: amount}("");
-        require(success, "Failed to send funds");
+    function donateOrFund() external payable {
+        amount_donated = amount_donated + msg.value;
     }
 
     // Public Functions
@@ -325,8 +348,17 @@ contract ECO4Reward {
      *  
      *  
      */
-    function getUserData(address user) public view returns (Users memory) {
+    function getUserData(address user) public view returns (User memory) {
         return usersData[user];
+    }
+
+    /*
+     * @notice Get User Info
+     *  
+     *  
+     */
+    function getUserInfo(uint256 id) public view returns (User memory) {
+        return userInfo[id];
     }
 
     /*
@@ -336,113 +368,5 @@ contract ECO4Reward {
      */
     function getContractData() public view returns (uint256, uint256, uint256, uint256, uint256) {
         return (all_actions, all_waste, all_trees, userCount, paid_out);
-    }
-
-    /*
-     * @notice Get A list of all users details
-     *  
-     *  
-     */
-    function getUserList() public view returns (Users[] memory) {
-        return all_users;
-    }
-
-    /*
-     * @notice Get A list of all environmental actions
-     *  
-     *  
-     */
-    function getActions() public view returns (Actions[] memory) {
-        uint256 currentIndex = 0;
-        uint256 itemCount = 0;
-
-        for (uint256 i = 0; i < actionCount; i++) {
-            itemCount += 1;
-        }
-
-        Actions[] memory items = new Actions[](itemCount);
-
-        for (uint256 i = 0; i < actionCount; i++) {
-            uint256 currentId = i;
-
-            Actions storage currentItem = idToActions[currentId];
-            items[currentIndex] = currentItem;
-
-            currentIndex += 1;
-        }
-
-        uint256 length = items.length;
-        Actions[] memory reversedArray = new Actions[](length);
-
-        for (uint256 i = 0; i < length; i++) {
-            reversedArray[i] = items[length - 1 - i];
-        }
-        return reversedArray;
-    }
-
-    /*
-     * @notice Get A list of all waste recyling actions
-     *  
-     *  
-     */
-    function getWasteActions() public view returns (Waste[] memory) {
-        uint256 currentIndex = 0;
-        uint256 itemCount = 0;
-
-        for (uint256 i = 0; i < wasteCount; i++) {
-            itemCount += 1;
-        }
-
-        Waste[] memory items = new Waste[](itemCount);
-
-        for (uint256 i = 0; i < wasteCount; i++) {
-            uint256 currentId = i;
-
-            Waste storage currentItem = idToWaste[currentId];
-            items[currentIndex] = currentItem;
-
-            currentIndex += 1;
-        }
-
-        uint256 length = items.length;
-        Waste[] memory reversedArray = new Waste[](length);
-
-        for (uint256 i = 0; i < length; i++) {
-            reversedArray[i] = items[length - 1 - i];
-        }
-        return reversedArray;
-    }
-
-    /*
-     * @notice Get A list of all tree planting actions
-     *  
-     *  
-     */
-    function getTreeActions() public view returns (Trees[] memory) {
-        uint256 currentIndex = 0;
-        uint256 itemCount = 0;
-
-        for (uint256 i = 0; i < treeCount; i++) {
-            itemCount += 1;
-        }
-
-        Trees[] memory items = new Trees[](itemCount);
-
-        for (uint256 i = 0; i < treeCount; i++) {
-            uint256 currentId = i;
-
-            Trees storage currentItem = idToTrees[currentId];
-            items[currentIndex] = currentItem;
-
-            currentIndex += 1;
-        }
-
-        uint256 length = items.length;
-        Trees[] memory reversedArray = new Trees[](length);
-
-        for (uint256 i = 0; i < length; i++) {
-            reversedArray[i] = items[length - 1 - i];
-        }
-        return reversedArray;
     }
 }

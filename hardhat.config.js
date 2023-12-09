@@ -16,7 +16,7 @@ const BSCSCAN = process.env.BSCSCAN;
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-  solidity: "0.8.19",
+  solidity: "0.8.20",
   networks: {
     bsc: {
       url: "https://data-seed-prebsc-1-s1.binance.org:8545",
@@ -36,7 +36,7 @@ module.exports = {
       accounts: [GOERLI_PRIVATE_KEY],
     },
     avax: {
-      url: "https://avalanche-fuji-c-chain.publicnode.com",
+      url: "https://api.avax-test.network/ext/bc/C/rpc",
       chainId: 43113,
       accounts: [MUMBAI_PRIVATE_KEY],
     },
