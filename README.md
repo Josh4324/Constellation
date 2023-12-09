@@ -81,7 +81,7 @@ Create Enviromental Actions.
 </br></br>
 Get Rewarded.
 </br></br>
-Convert Point to Toro Coin.
+Convert Point to Avax Coin.
 </br></br>
 Gamification - See where you rank on the leaderboard
 </br></br>
@@ -92,8 +92,8 @@ Impacts - View the impacts you have done in your profile
 
 ## Project Details
 
-Link to Web App (Best Viewed on Desktop)- https://eco4reward.vercel.app/ <br/>
-Link to Front End Repo - https://github.com/Josh4324/Toronet-FE
+Link to Web App (Best Viewed on Desktop) - https://constellation-fe-josh4324.vercel.app/<br/>
+Link to Front End Repo - https://github.com/Josh4324/Constellation-FE
 
 ## Smart Contract Details
 
