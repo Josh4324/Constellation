@@ -27,34 +27,36 @@ There are two distinct user roles within the application: normal users and admin
 Smart Contracts:
 
 Eco4Reward utilizes two smart contracts - the Eco4Reward contract and the Lottery contract. The Eco4Reward contract manages the creation and approval of environmental actions. It also incorporates functionality for funding the contract and converting points to AVAX tokens. On the other hand, the Lottery contract is responsible for gamifying the system. It employs Chainlink Automation and Chainlink VRF to select a daily winner among active users, with the winner receiving 10 points.
-
+<br/><br/>
 Both smart contracts have been successfully deployed on the Avalanche Fuji testnet.
-
+<br/><br/>
 The Graph:
-
+<br/><br/>
 The graph was used to index the events on the smart contract to be able easily query the information on the frontend.
-
+<br/><br/>
 Frontend:
-
+<br/><br/>
 The frontend, developed with Next.js, Ethers.js, The Graph, and other tools, features several key pages:
-
+<br/><br/>
 Landing Page: This page provides essential information, including calls to action for creating environmental actions and accessing user profiles. It offers guidance on using the application, statistics on application usage, a call to action for funding, and an overview of application features.
-
+<br/><br/>
 Actions Page: Users can create environmental actions on this page.
-
+<br/><br/>
 Profile Page: This page allows users to view actions, view their current points and overall points, and convert their point to avax coin.
-
+<br/><br/>
 Leaderboard Page: Users can see where they rank in terms of points among other users of the app, they can also see the winner of the daily lottery of the app, only users can perform at least one environmental actions can qualify for the lottery.
-
+<br/><br/>
 Admin Page: This page is dedicated to admins to approve or reject environment actions and assign points to the approved environmental actions.
-
+<br/><br/>
 I leveraged thegraph to streamline and optimize data querying from the blockchain. Integrating thegraph into the project significantly improved the efficiency of retrieving and aggregating on-chain data, enhancing the overall user experience. By creating custom subgraphs tailored to the project's specific data needs, I ensured a more targeted and precise data extraction process. thegraph's decentralized indexing protocol allowed for real-time updates and seamless data synchronization, providing users with the most accurate and up-to-date information. The flexibility and scalability of thegraph played a pivotal role in building a robust and dynamic data layer for the project, ultimately contributing to its success.
-
+<br/><br/>
 The frontend is designed to be user-friendly, providing easy navigation between different sections of the application and facilitating user engagement.
+<br/><br/>
 
 ### Gamification of ECO4REWARD
 
 In order to encourage users to continuously use the app, i introduced a leaderboard system where users can see how they rank with other users. i also introduced a lottery system in which requires a user to perform at least one environmental action for the user to qualify for the lottery. This lottery runs every 24 hours and it is powered by chainlink automation and chainlink vrf. The winner of the lottery everyday is displayed on the leaderboard page.
+<br/><br/>
 
 ### Smart Contracts:
 
@@ -154,6 +156,6 @@ https://testnet.snowtrace.io/tx/0x1713455b45358885bd29ca051d6aeaaf1b911ed36c6ff6
 
 ### DEMO
 
-Demo -
+Demo - https://www.youtube.com/watch?v=rkGlGEgwY9c
 
 <br/>
