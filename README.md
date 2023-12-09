@@ -24,6 +24,38 @@ There are two distinct user roles within the application: normal users and admin
 
 ## How we built it
 
+Smart Contracts:
+
+Eco4Reward utilizes two smart contracts - the Eco4Reward contract and the Lottery contract. The Eco4Reward contract manages the creation and approval of environmental actions. It also incorporates functionality for funding the contract and converting points to AVAX tokens. On the other hand, the Lottery contract is responsible for gamifying the system. It employs Chainlink Automation and Chainlink VRF to select a daily winner among active users, with the winner receiving 10 points.
+
+Both smart contracts have been successfully deployed on the Avalanche Fuji testnet.
+
+The Graph:
+
+The graph was used to index the events on the smart contract to be able easily query the information on the frontend.
+
+Frontend:
+
+The frontend, developed with Next.js, Ethers.js, The Graph, and other tools, features several key pages:
+
+Landing Page: This page provides essential information, including calls to action for creating environmental actions and accessing user profiles. It offers guidance on using the application, statistics on application usage, a call to action for funding, and an overview of application features.
+
+Actions Page: Users can create environmental actions on this page.
+
+Profile Page: This page allows users to view actions, view their current points and overall points, and convert their point to avax coin.
+
+Leaderboard Page: Users can see where they rank in terms of points among other users of the app, they can also see the winner of the daily lottery of the app, only users can perform at least one environmental actions can qualify for the lottery.
+
+Admin Page: This page is dedicated to admins to approve or reject environment actions and assign points to the approved environmental actions.
+
+I leveraged thegraph to streamline and optimize data querying from the blockchain. Integrating thegraph into the project significantly improved the efficiency of retrieving and aggregating on-chain data, enhancing the overall user experience. By creating custom subgraphs tailored to the project's specific data needs, I ensured a more targeted and precise data extraction process. thegraph's decentralized indexing protocol allowed for real-time updates and seamless data synchronization, providing users with the most accurate and up-to-date information. The flexibility and scalability of thegraph played a pivotal role in building a robust and dynamic data layer for the project, ultimately contributing to its success.
+
+The frontend is designed to be user-friendly, providing easy navigation between different sections of the application and facilitating user engagement.
+
+### Gamification of ECO4REWARD
+
+In order to encourage users to continuously use the app, i introduced a leaderboard system where users can see how they rank with other users. i also introduced a lottery system in which requires a user to perform at least one environmental action for the user to qualify for the lottery. This lottery runs every 24 hours and it is powered by chainlink automation and chainlink vrf. The winner of the lottery everyday is displayed on the leaderboard page.
+
 ### Smart Contracts:
 
 Eco4Reward utilizes two smart contracts - the Eco4Reward contract and the Lottery contract. The Eco4Reward contract manages the creation and approval of environmental actions. It also incorporates functionality for funding the contract and converting points to AVAX tokens. On the other hand, the Lottery contract is responsible for gamifying the system. It employs Chainlink Automation and Chainlink VRF to select a daily winner among active users, with the winner receiving 10 points.
@@ -106,6 +138,11 @@ Link to Front End Repo - https://github.com/Josh4324/Constellation-FE
 - Chailink Automation Link - https://automation.chain.link/fuji/82547523502638176906153754645582021584650475612988661474457219442003472944597
 
 ### Transactions
+
+https://testnet.snowtrace.io/tx/0x605df1c859bd5bf637f330a220471524c585093676146be1a294be9dff695c75?chainId=43113 </br>
+https://testnet.snowtrace.io/tx/0x2211420693058026942a0f19c40085760ae9bbe6c4a15d5f28ca0689be9a9f95?chainId=43113 <br/>
+https://testnet.snowtrace.io/tx/0xe6c8cd57a671ca8a28fbbe56109b457fe9b81e7231e441b576f501c9ac9f3a3e?chainId=43113 <br/>
+https://testnet.snowtrace.io/tx/0x1713455b45358885bd29ca051d6aeaaf1b911ed36c6ff669803986fecb68885f?chainId=43113 <br/>
 
 <br/>
 

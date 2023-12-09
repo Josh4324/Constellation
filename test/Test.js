@@ -72,7 +72,7 @@ describe("eco", function () {
 
       await eco.connect(user1).confirmAction(0, 5, true);
 
-      //await lot.addPoint(user2.address);
+      await eco.addPoint(10, user2.address);
 
       console.log(await eco.getUserData(user2.address));
 

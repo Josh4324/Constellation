@@ -54,7 +54,7 @@ contract ECO4RewardLotteryDaily is VRFConsumerBaseV2, AutomationCompatibleInterf
         uint256 itemCount = 0;
 
         for (uint256 i = 0; i < ECO.userCount(); i++) {
-            if (block.timestamp - ECO.getUserInfo(i).last_action < 1 days) {
+            if (block.timestamp - ECO.getUserInfo(i).last_action < 24 hours) {
                 itemCount += 1;
             }
         }
@@ -62,7 +62,7 @@ contract ECO4RewardLotteryDaily is VRFConsumerBaseV2, AutomationCompatibleInterf
         ECO4Reward.User[] memory items = new ECO4Reward.User[](itemCount);
 
         for (uint256 i = 0; i < ECO.userCount(); i++) {
-            if (block.timestamp - ECO.getUserInfo(i).last_action < 1 days) {
+            if (block.timestamp - ECO.getUserInfo(i).last_action < 24 hours) {
                 uint256 currentId = i;
 
                 items[currentIndex] = ECO.getUserInfo(currentId);
@@ -80,7 +80,7 @@ contract ECO4RewardLotteryDaily is VRFConsumerBaseV2, AutomationCompatibleInterf
      */
     function checkUpkeep(bytes calldata) public view override returns (bool upkeepNeeded, bytes memory performData) {
         ECO4Reward.User[] memory ListBool = getDailyLotteryUsers();
-        upkeepNeeded = (ListBool.length > 0 && (block.timestamp > lottery_time + 24 hours));
+        upkeepNeeded = (ListBool.length > 0 && (block.timestamp > lottery_time + 10 minutes));
 
         return (upkeepNeeded, "0x0");
     }
