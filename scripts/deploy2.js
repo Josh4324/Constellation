@@ -9,7 +9,7 @@ const hre = require("hardhat");
 async function main() {
   const ecolot = await hre.ethers.deployContract("ECO4RewardLotteryDaily", [
     "0x0638169f3b57905858e6d9aB1f83741880ddDd57",
-    838,
+    852,
     "0x354d2f95da55398f44b7cff77da56283d9c6c829a4bdf1bbcaf2ad6a4d081f61",
     2500000,
     "0x2eD832Ba664535e5886b75D64C46EB9a228C2610",
@@ -28,7 +28,7 @@ async function main() {
     address: ecolot.target,
     constructorArguments: [
       "0x0638169f3b57905858e6d9aB1f83741880ddDd57",
-      838,
+      852,
       "0x354d2f95da55398f44b7cff77da56283d9c6c829a4bdf1bbcaf2ad6a4d081f61",
       2500000,
       "0x2eD832Ba664535e5886b75D64C46EB9a228C2610",

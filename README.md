@@ -99,7 +99,11 @@ Link to Front End Repo - https://github.com/Josh4324/Constellation-FE
 
 - Network: Avalanche Fuji Testnet
 
-- Address:
+- ECO4REWARD Address: 0x0638169f3b57905858e6d9aB1f83741880ddDd57 <br/>
+- ECO4REWARD LOTTERY Address: 0x3088626e9A0d39e3a1EFC0CD0095754F19a617D6 <br/>
+- Thegraph - https://thegraph.com/studio/subgraph/eco4reward/
+- Subscription ID : https://vrf.chain.link/fuji/852
+- Chailink Automation Link - https://automation.chain.link/fuji/82547523502638176906153754645582021584650475612988661474457219442003472944597
 
 ### Transactions
 

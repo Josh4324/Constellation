@@ -2,7 +2,6 @@
 
 pragma solidity ^0.8.17;
 
-import "hardhat/console.sol";
 import {VRFCoordinatorV2Interface} from "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import {VRFConsumerBaseV2} from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 import {AutomationCompatibleInterface} from
